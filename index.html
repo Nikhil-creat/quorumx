@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>QuorumX – Autonomous Raft KV Fabric | Nikhil Chary Sriramoju</title>
+<title>QuorumX Ω: Autonomous Raft Fabric | Nikhil Chary Sriramoju</title>
+<meta name="description" content="QuorumX Ω: self-healing Raft key-value fabric with a Groq AI assistant, CNN anomaly detection, MCP tools and a Jepsen-style chaos suite. Designed and developed by Nikhil Chary Sriramoju.">
+<meta name="keywords" content="Raft consensus, distributed key-value store, agentic AI, Groq, MCP, RAG, CNN anomaly detection, chaos engineering, Jepsen, zero trust, Nikhil Chary Sriramoju">
+<meta name="theme-color" content="#05060f"><meta property="og:title" content="QuorumX Ω: Autonomous Raft Fabric"><meta property="og:description" content="Self-healing distributed KV store with AI agents. By Nikhil Chary Sriramoju.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -33,10 +36,24 @@ canvas{width:100%;height:110px;image-rendering:pixelated;border-radius:8px;backg
 footer{margin:24px 0 8px;padding:16px;border:1px solid var(--ln);border-radius:14px;text-align:center;color:var(--mu)}
 footer b{color:var(--tx);font-size:18px;display:block}footer a{color:var(--fo);margin:0 8px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
-.log div{margin-bottom:4px}.log b{color:var(--tx)}</style></head><body>
-<h1>QuorumX Ω</h1>
-<p class="sub">Autonomous Raft key-value fabric: Pre-Vote consensus, ReadIndex reads, a CNN that reads metric heatmaps, and a Groq + RAG + MCP agent that heals the cluster. This is a live in-browser simulation of the design.</p>
-<div class="chips"><span>Multi-Raft</span><span>Pre-Vote</span><span>ReadIndex + Lease</span><span>mTLS</span><span>PQC-ready (ML-KEM)</span><span>Hybrid Logical Clocks</span><span>Merkle audit log</span><span>eBPF tracing</span><span>CRDT edge cache</span><span>WASM edge node</span><span>OpenTelemetry</span><span>MCP</span><span>Groq Llama-3</span><span>GraphRAG</span><span>Groq ops assistant</span><span>Voice ops</span><span>Tenant RBAC</span><span>Merkle audit</span><span>Jepsen chaos</span><span>Multi-Raft shards</span></div>
+.log div{margin-bottom:4px}.log b{color:var(--tx)}body{position:relative}#bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1}
+.card{background:rgba(15,20,40,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:rgba(130,150,255,.22);box-shadow:0 0 40px rgba(90,209,255,.06);transition:border-color .3s}.card:hover{border-color:rgba(90,209,255,.5)}
+.hero{padding:28px 0 12px}.hero h1{font-size:clamp(30px,8vw,60px);line-height:1.05;background:linear-gradient(90deg,#5ad1ff,#b48cff 50%,#ffb347);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.2em;color:var(--fo)}.cur{display:inline-block;width:8px;height:1em;background:var(--fo);vertical-align:-2px;margin-left:2px;animation:bl 1s steps(2) infinite}@keyframes bl{50%{opacity:0}}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:14px 0}.kpi div{background:rgba(20,26,54,.55);backdrop-filter:blur(10px);border:1px solid var(--ln);border-radius:12px;padding:10px 12px}.kpi span{font-size:11px;color:var(--mu);display:block}.kpi b{font:600 20px 'JetBrains Mono',monospace}
+.pri{background:linear-gradient(90deg,#2a7bff,#8a4dff);border:0}.btn{display:inline-block;text-decoration:none;color:var(--tx);background:var(--p2);border:1px solid var(--ln);border-radius:8px;padding:7px 10px}
+.by{margin-top:12px;color:var(--mu)}.by b{color:var(--le);letter-spacing:.04em}.cred h3{margin:0;font-size:22px}.cred .chips span{color:var(--tx)}
+.mq{overflow:hidden;white-space:nowrap;margin:8px 0 16px;mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}#mq{display:inline-block;animation:mq 50s linear infinite}#mq span{margin:0 16px;color:var(--mu);font:12px 'JetBrains Mono',monospace}@keyframes mq{to{transform:translateX(-50%)}}
+#boot{position:fixed;inset:0;z-index:50;background:#05060f;padding:24px;color:var(--ok);font-size:13px;transition:opacity .6s}#boot.x{opacity:0;pointer-events:none}
+#pm{display:none;position:fixed;inset:0;z-index:40;background:rgba(5,6,15,.7);backdrop-filter:blur(6px);justify-content:center;align-items:flex-start;padding-top:15vh}#pm.on{display:flex}.pbox{width:min(520px,92vw);background:var(--p);border:1px solid var(--ln);border-radius:14px;padding:10px}.pbox input{width:100%}#pl button{display:block;width:100%;text-align:left;margin-top:4px}
+@media(prefers-reduced-motion:reduce){#mq,.cur{animation:none}}</style></head><body><canvas id="bg" aria-hidden="true"></canvas><div id="boot" class="mono"></div>
+<header class="hero"><div class="tag">QUORUMX Ω · V3 · AUTONOMOUS DISTRIBUTED FABRIC</div>
+<h1>Self-healing Raft fabric, run by AI agents.</h1>
+<p class="sub" style="min-height:3em"><span id="ty"></span><i class="cur"></i></p>
+<div class="kpi" id="kpi"></div>
+<div class="row"><button class="pri" onclick="pal(1)">Command palette (Ctrl+K)</button><button onclick="document.querySelector('#chat').scrollIntoView({behavior:'smooth'})">Talk to the assistant</button><button onclick="loadOn=!loadOn;this.textContent='Live load: '+(loadOn?'on':'off')">Live load: on</button><a class="btn" href="https://github.com/Nikhil-creat">GitHub</a></div>
+<div class="by">Designed and developed by <b>NIKHIL CHARY SRIRAMOJU</b></div></header>
+<div class="mq"><div id="mq"></div></div>
 
 <div class="stats" id="stats"></div>
 <div class="grid">
@@ -69,12 +86,15 @@ footer b{color:var(--tx);font-size:18px;display:block}footer a{color:var(--fo);m
  <section class="card"><h2>Raft event log</h2><div class="log" id="elog" style="height:240px"></div></section>
 <section class="card"><h2>Chaos suite (Jepsen-style safety check)</h2><div class="row" style="margin-top:0"><button onclick="chaos()">Run 72-op chaos test</button></div><p id="cres" class="sub" style="margin-top:10px">Writes while killing, partitioning and restarting nodes, then checks no acknowledged write is lost.</p></section>
  <section class="card"><h2>Observability: /metrics, shards, Merkle audit head</h2><pre id="met"></pre></section>
+<section class="card cred" style="margin-top:12px"><h2>The engineer</h2><h3>NIKHIL CHARY SRIRAMOJU</h3>
+<p class="sub" style="margin:4px 0">Final-year B.Tech CSE building agentic AI, distributed systems and security platforms. This page simulates the QuorumX architecture in your browser; the Go and Docker backend is the repo scaffold.</p>
+<h2 style="margin-top:12px">Flagship projects</h2><div class="chips"><span>APEX-AI</span><span>PharmAi Vision</span><span>AD-CSF Security Fabric</span><span>EcoGrid-AI</span><span>OptiMarket X</span><span>StreamGuard</span><span>Medha Agent</span><span>LLMOps Nexus</span><span>EvalForge</span><span>Aether Screenshot Studio</span><span>CareFlow</span><span>Veritas</span><span>Digital Twin Platform</span></div>
+<h2>Certifications and job simulations</h2><div class="chips"><span>PwC Technology Consulting (Forage)</span><span>PwC Cyber Security Consulting (Forage)</span><span>Datacom Automation AI Accelerator (Forage)</span><span>Datacom Cyber Security Operations (Forage)</span><span>Clifford Chance Cyber Security (Forage)</span><span>British Airways Data Science (Forage)</span><span>Deloitte Data Analytics (Forage)</span><span>Deloitte Technology (Forage)</span><span>Latham &amp; Watkins Tech Transactions (Forage)</span><span>NASSCOM: IT Forensic Analyst</span><span>NASSCOM: Cloud Infrastructure Analyst</span><span>NASSCOM: Endpoint Security Analyst</span><span>NASSCOM: Blockchain Architect</span><span>Reliance Foundation: IoT Security Specialist</span><span>Reliance Foundation: AI-ML Engineer Foundation</span><span>Reliance Foundation: Industry 4.0 Robotics</span><span>NIELIT Yuva AI for All</span><span>Thiranex Data Analytics Internship</span><span>Power BI (PHN Technology)</span></div></section>
 </div>
 
-<footer><b>Designed and developed by NIKHIL CHARY SRIRAMOJU</b>
-Final-year B.Tech CSE · Distributed systems, agentic AI and security<br>
-<a href="https://github.com/Nikhil-creat">GitHub</a><a href="https://in.linkedin.com/in/nikhil-chary-sriramoju-95041b38a">LinkedIn</a><a href="mailto:sriramojunikhil66@gmail.com">Email</a></footer>
+<footer><b>Designed and developed by NIKHIL CHARY SRIRAMOJU</b>Final-year B.Tech CSE · Agentic AI · Distributed systems · Cybersecurity<br><a href="https://github.com/Nikhil-creat">GitHub</a><a href="https://in.linkedin.com/in/nikhil-chary-sriramoju-95041b38a">LinkedIn</a><a href="mailto:sriramojunikhil66@gmail.com">Email</a></footer>
 
+<div id="pm"><div class="pbox"><input id="pi" placeholder="Type a command" aria-label="Command palette"><div id="pl"></div></div></div>
 <script>
 const $=s=>document.querySelector(s),N=5,q=$('#q');
 let nodes=[],ev=[],ag=[],pulses=[],auto=true,mode='normal',leak=0,lastCls='normal',busy=false,partAt=0,H=[...Array(5)].map(()=>Array(40).fill(.2));
@@ -202,6 +222,23 @@ async function loadModels(){const k=$('#gk').value.trim();if(!k)return;try{const
  if(ids.length){$('#gm').innerHTML=ids.map(i=>`<option>${i}</option>`).join('');addMsg('bot','Loaded '+ids.length+' live Groq models. Using '+ids[0]+'.')}}catch(e){addMsg('bot','Could not load models: '+e.message+' (check the key)')}}
 addMsg('bot','Ready. Paste a free Groq key, then ask me to inspect or break the cluster. Without a key I run in offline mode.');saveT();loadModels();
 init();L('cluster boot, 5 nodes');A('Agent online: Groq llama-3.3-70b, GraphRAG index loaded, MCP server bound');
+
+(()=>{const b=$('#boot'),T=['QUORUMX Ω boot sequence','[ OK ] consensus core: pre-vote, read-index','[ OK ] mTLS + ML-KEM hybrid handshake (sim)','[ OK ] CNN heatmap model','[ OK ] MCP server, Groq link','[ OK ] agents online'];let i=0;const t=setInterval(()=>{b.innerHTML+=`<div>${T[i++]}</div>`;if(i>=T.length){clearInterval(t);setTimeout(()=>b.classList.add('x'),500)}},230);b.onclick=()=>b.classList.add('x')})();
+(()=>{const c=$('#bg'),x=c.getContext('2d');let w,h,P=[];const rs=()=>{w=c.width=innerWidth;h=c.height=innerHeight;P=[...Array(Math.min(70,w/14|0))].map(()=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4}))};rs();addEventListener('resize',rs);
+const f=()=>{x.clearRect(0,0,w,h);const l=lead(),col=l?(quorum(l)?'90,209,255':'255,92,122'):'255,179,71';P.forEach(p=>{p.x=(p.x+p.vx+w)%w;p.y=(p.y+p.vy+h)%h;x.fillStyle=`rgba(${col},.7)`;x.fillRect(p.x,p.y,2,2)});
+for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const d=Math.hypot(P[i].x-P[j].x,P[i].y-P[j].y);if(d<120){x.strokeStyle=`rgba(${col},${.18*(1-d/120)})`;x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.stroke()}}requestAnimationFrame(f)};f()})();
+(()=>{const T=['Raft consensus with Pre-Vote and ReadIndex reads.','A CNN that reads metric heatmaps before failures spread.','Groq-powered agents that plan, validate and self-heal.','Chaos-tested: no acknowledged write is ever lost.'];let a=0,b=0,d=1;setInterval(()=>{const s=T[a];b=Math.max(0,b+d);$('#ty').textContent=s.slice(0,b);if(b>s.length+18)d=-2;if(b<=0){d=1;a=(a+1)%T.length}},45)})();
+const TECH=['Raft Consensus','Multi-Raft','Pre-Vote','ReadIndex','mTLS','ML-KEM PQC','Hybrid Logical Clocks','Merkle Audit','eBPF','CRDT Edge','WASM','OpenTelemetry','MCP','Groq','GraphRAG','CNN + ONNX','Agentic AI','Jepsen Chaos','Zero Trust','gRPC + QUIC','Qdrant','Prometheus','Grafana','Docker'].map(t=>`<span>${t}</span>`).join('');$('#mq').innerHTML=TECH+TECH;
+let loadOn=true,acks=0;
+setInterval(()=>{if(!loadOn)return;const l=lead();if(!l||l.log.length>3000)return;for(let i=0;i<3;i++)if(put('load/k'+(Math.random()*40|0),Date.now()%997).startsWith('OK'))acks++;
+ if(l.log.length>800&&nodes.every(n=>n.alive&&n.g===0&&n.ci===l.ci&&n.log.length===l.log.length)){const sn=Object.entries(l.kv).map(([k,v])=>({t:l.term,op:'put',k,v}));nodes.forEach(n=>{n.log=sn.map(e=>({...e}));n.ci=sn.length});L('Log compaction: snapshot installed ('+sn.length+' keys)','a')}},100);
+setInterval(()=>{const o=acks;acks=0;const q=quorum(lead());$('#kpi').innerHTML=[['Throughput (sim load)',o+' ops/s'],['p99 latency (sim)',q?(2.1+Math.random()*2.4).toFixed(1)+' ms':'n/a'],['Consensus',q?'HEALTHY':'DEGRADED'],['CNN anomaly',lastCls]].map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('')},1000);
+const CMDS=[['Kill leader',killL],['Partition leader',partition],['Heal network',heal],['Revive all nodes',reviveAll],['Inject clock drift',drift],['Run chaos test',chaos],['Assistant: personal mode',()=>{$('#md').value='me'}],['Assistant: cluster ops mode',()=>{$('#md').value='ops'}],['Focus assistant',()=>$('#cm').focus()],['Open GitHub profile',()=>open('https://github.com/Nikhil-creat')]];
+function pal(o){$('#pm').classList.toggle('on',!!o);if(o){$('#pi').value='';rl();$('#pi').focus()}}
+function rl(){const f=$('#pi').value.toLowerCase();$('#pl').innerHTML=CMDS.map((c,i)=>[c,i]).filter(([c])=>c[0].toLowerCase().includes(f)).map(([c,i])=>`<button onclick="runC(${i})">${c[0]}</button>`).join('')}
+function runC(i){pal(0);CMDS[i][1]()}
+$('#pi').oninput=rl;$('#pi').onkeydown=e=>{if(e.key==='Enter'){const b=$('#pl button');if(b)b.click()}};
+addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();pal(1)}if(e.key==='Escape')pal(0)});
 let c=0;setInterval(()=>{tick(100);pulses.forEach(p=>p.l-=.2);pulses=pulses.filter(p=>p.l>0);if(++c%3===0)col();draw()},100);
 q.addEventListener('keydown',e=>{if(e.key==='Enter')run()});
 </script></body></html>
