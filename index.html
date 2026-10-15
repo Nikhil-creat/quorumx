@@ -40,9 +40,10 @@ footer b{color:var(--tx);font-size:18px;display:block}footer a{color:var(--fo);m
 
 <div class="stats" id="stats"></div>
 <div class="grid">
- <section class="card" style="grid-column:1/-1"><h2>QuorumX Ops Assistant: Groq Llama-3, free API key stays in your browser</h2>
-  <div class="row" style="margin-top:0"><input id="gk" type="password" placeholder="Paste Groq API key (gsk_...)" autocomplete="off" aria-label="Groq API key"><select id="gm" aria-label="Model"><option>llama-3.3-70b-versatile</option><option>llama-3.1-8b-instant</option></select><button onclick="saveKey()">Save key</button><button onclick="explain()">Explain incident</button><button onclick="mic()">Voice</button></div>
+ <section class="card" style="grid-column:1/-1"><h2>QuorumX Assistant: Groq-powered, free API key stays in your browser</h2>
+  <div class="row" style="margin-top:0"><input id="gk" type="password" placeholder="Paste Groq API key (gsk_...)" autocomplete="off" aria-label="Groq API key"><select id="md" aria-label="Mode" onchange="addMsg('bot',this.value==='me'?'Personal assistant mode on.':'Ops mode on.')"><option value="me">Personal assistant</option><option value="ops">Cluster ops</option></select><select id="gm" aria-label="Model"><option>openai/gpt-oss-120b</option><option>openai/gpt-oss-20b</option></select><button onclick="saveKey()">Save key</button><button onclick="explain()">Explain incident</button><button onclick="mic()">Voice</button></div>
   <div class="log" id="chat" style="height:200px;margin-top:8px"></div>
+  <div class="log mono" id="tasks" style="height:auto;max-height:90px;margin-top:8px"></div>
   <div class="row"><input id="cm" placeholder="Ask: why did the leader change? Or: kill the leader and verify recovery" aria-label="Message"><button onclick="chat()">Send</button></div></section>
  <section class="card"><h2>5-node Raft cluster</h2><div id="ring"></div>
   <div class="row">
@@ -166,18 +167,18 @@ function draw(){const cx=250,cy=165,R=120,P=nodes.map((n,i)=>[cx+R*Math.sin(i*1.
 const K=k=>$('#ten').value+'/'+k,W=()=>$('#role').value!=='reader',hist=[];
 const addMsg=(w,t)=>{const c=$('#chat');c.insertAdjacentHTML('beforeend',`<div class="${w==='you'?'w':'a'}"><b>${w==='you'?'You':'QuorumX'}:</b> ${t.replace(/[<>&]/g,x=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[x]))}</div>`);c.scrollTop=c.scrollHeight};
 try{$('#gk').value=localStorage.getItem('qx_gk')||''}catch(e){}
-function saveKey(){try{localStorage.setItem('qx_gk',$('#gk').value.trim());addMsg('bot','Key saved in this browser only.')}catch(e){addMsg('bot','Storage blocked; key kept for this tab only.')}}
+function saveKey(){try{localStorage.setItem('qx_gk',$('#gk').value.trim());addMsg('bot','Key saved in this browser only.');loadModels()}catch(e){addMsg('bot','Storage blocked; key kept for this tab only.')}}
 const state=()=>{const l=lead();return JSON.stringify({leader:l?l.id:null,term:l?l.term:null,quorum:!!quorum(l),commit:l?l.ci:0,nodes:nodes.map(n=>[n.id,n.alive?n.role:'down',n.term,n.log.length,n.ci]),anomaly:lastCls,autopilot:auto,recent:ev.slice(0,8).map(x=>x.replace(/<[^>]+>/g,''))})};
-const SYS=()=>`You are QuorumX Ops Assistant for a Raft key-value store, designed and developed by Nikhil Chary Sriramoju. Answer briefly like an SRE. Live state (nodes=[id,role,term,logLen,commit]): ${state()}. To act, append commands exactly like [[kill_leader]] [[partition]] [[heal]] [[revive]] [[drift]] [[put key value]] [[get key]] [[delete key]]. Act only when the user asks.`;
+const SYS0=()=>`You are QuorumX Ops Assistant for a Raft key-value store, designed and developed by Nikhil Chary Sriramoju. Answer briefly like an SRE. Live state (nodes=[id,role,term,logLen,commit]): ${state()}. To act, append commands exactly like [[kill_leader]] [[partition]] [[heal]] [[revive]] [[drift]] [[put key value]] [[get key]] [[delete key]]. Act only when the user asks.`;
 function act(t){const o=[];for(const m of t.matchAll(/\[\[(\w+)\s*(\S*)\s*(.*?)\]\]/g)){const[,c,a,b]=m;
  if(c==='kill_leader')killL();else if(c==='partition')partition();else if(c==='heal')heal();else if(c==='revive')reviveAll();else if(c==='drift')drift();
- else if(c==='get'&&a)o.push(get(K(a)));else if((c==='put'||c==='delete')&&a)o.push(W()?put(K(a),c==='put'?b:null,c==='delete'):'403 RBAC: reader token cannot write')}
+ else if(c==='task'&&(a||b)){tasks.push({t:(a+' '+b).trim(),d:0});saveT();o.push('Task added')}else if(c==='done'&&tasks[a-1]){tasks[a-1].d=1;saveT();o.push('Task done')}else if(c==='get'&&a)o.push(get(K(a)));else if((c==='put'||c==='delete')&&a)o.push(W()?put(K(a),c==='put'?b:null,c==='delete'):'403 RBAC: reader token cannot write')}
  if(o.length)addMsg('bot','Result: '+o.join(' | '))}
 async function chat(){const el=$('#cm'),m=el.value.trim();if(!m)return;el.value='';addMsg('you',m);const key=$('#gk').value.trim();
  if(!key){addMsg('bot',local(m));return}
- try{const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+key},body:JSON.stringify({model:$('#gm').value,temperature:.2,max_tokens:500,messages:[{role:'system',content:SYS()},...hist.slice(-8),{role:'user',content:m}]})});
-  const d=await r.json();if(!r.ok)throw new Error(d.error&&d.error.message||r.status);const t=d.choices[0].message.content;
-  hist.push({role:'user',content:m},{role:'assistant',content:t});addMsg('bot',t.replace(/\[\[.*?\]\]/g,'').trim());act(t)}catch(e){addMsg('bot','Groq error: '+e.message)}}
+ try{const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+key},body:JSON.stringify({model:$('#gm').value,temperature:.3,max_completion_tokens:1500,...(/gpt-oss/.test($('#gm').value)?{reasoning_effort:'low'}:{}),messages:[{role:'system',content:SYS()},...hist.slice(-8),{role:'user',content:m}]})});
+  const d=await r.json();if(!r.ok)throw new Error(d.error&&d.error.message||r.status);const t=d.choices[0].message.content||'(empty reply, try again)';
+  hist.push({role:'user',content:m},{role:'assistant',content:t});addMsg('bot',t.replace(/\[\[.*?\]\]/g,'').trim());act(t)}catch(e){addMsg('bot','Groq error: '+e.message+(/exist|access/.test(e.message)?' | Pick another model from the list.':''))}}
 function local(m){const l=lead();return /kill|partition|heal|revive/i.test(m)?'Offline mode: use the chaos buttons, or add a Groq key so I can act for you.':`Offline mode. Leader ${l?'N'+l.id+' (term '+l.term+')':'none'}, quorum ${quorum(l)?'ok':'lost'}, anomaly ${lastCls}. Get a free key at console.groq.com for full answers.`}
 const explain=()=>{$('#cm').value='Explain the last incident: root cause, evidence from the events, and the safest fix.';chat()};
 function mic(){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S)return addMsg('bot','Voice input is not supported in this browser.');const r=new S();r.onresult=e=>{$('#cm').value=e.results[0][0].transcript;chat()};r.start()}
@@ -191,7 +192,15 @@ const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new T
 setInterval(async()=>{const l=lead();let h='n/a (needs https)';try{h='genesis';if(l)for(const e of l.log.slice(0,l.ci).slice(-100))h=await sha(h+JSON.stringify(e))}catch(e){h='n/a (needs https)'}
  const sh=[0,0,0];if(l)Object.keys(l.kv).forEach(k=>sh[k.length%3]++);
  $('#met').textContent=`quorumx_nodes_up ${nodes.filter(n=>n.alive).length}\nquorumx_has_quorum ${quorum(l)?1:0}\nquorumx_term ${l?l.term:0}\nquorumx_commit_index ${l?l.ci:0}\nquorumx_anomaly{class="${lastCls}"} 1\nquorumx_shard_keys{shard="0|1|2"} ${sh.join('|')}\nmerkle_audit_head ${h.slice(0,24)}`},1000);
-addMsg('bot','Ready. Paste a free Groq key, then ask me to inspect or break the cluster. Without a key I run in offline mode.');
+let tasks=[];try{tasks=JSON.parse(localStorage.getItem('qx_tasks')||'[]')}catch(e){}
+const esc=t=>t.replace(/[<>&]/g,x=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[x]));
+function saveT(){try{localStorage.setItem('qx_tasks',JSON.stringify(tasks))}catch(e){}$('#tasks').innerHTML=tasks.length?tasks.map((t,i)=>`<div>${i+1}. ${t.d?'[done] ':''}${esc(t.t)}</div>`).join(''):'Tasks: none yet. Ask me to add one.'}
+const ME=()=>`You are a friendly, sharp personal assistant for Nikhil Chary Sriramoju, a final-year B.Tech CSE student building AI and distributed-systems projects (GitHub: Nikhil-creat). Help with studies, coding, projects, interview prep, planning and writing. Be concise and practical. Today is ${new Date().toDateString()}. Tasks: ${JSON.stringify(tasks)}. To manage tasks append [[task text]] or [[done N]]. If asked about the demo cluster you may use [[kill_leader]] [[heal]] [[partition]] [[revive]].`;
+const SYS=()=>$('#md').value==='me'?ME():SYS0();
+async function loadModels(){const k=$('#gk').value.trim();if(!k)return;try{const r=await fetch('https://api.groq.com/openai/v1/models',{headers:{Authorization:'Bearer '+k}});const d=await r.json();if(!r.ok)throw new Error(d.error&&d.error.message||r.status);
+ const ids=d.data.map(m=>m.id).filter(i=>!/whisper|tts|guard|orpheus|prompt|embed/i.test(i)).sort((a,b)=>/gpt-oss-120b/.test(b)-/gpt-oss-120b/.test(a));
+ if(ids.length){$('#gm').innerHTML=ids.map(i=>`<option>${i}</option>`).join('');addMsg('bot','Loaded '+ids.length+' live Groq models. Using '+ids[0]+'.')}}catch(e){addMsg('bot','Could not load models: '+e.message+' (check the key)')}}
+addMsg('bot','Ready. Paste a free Groq key, then ask me to inspect or break the cluster. Without a key I run in offline mode.');saveT();loadModels();
 init();L('cluster boot, 5 nodes');A('Agent online: Groq llama-3.3-70b, GraphRAG index loaded, MCP server bound');
 let c=0;setInterval(()=>{tick(100);pulses.forEach(p=>p.l-=.2);pulses=pulses.filter(p=>p.l>0);if(++c%3===0)col();draw()},100);
 q.addEventListener('keydown',e=>{if(e.key==='Enter')run()});
