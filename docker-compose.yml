@@ -1,0 +1,30 @@
+# Scaffold: build contexts assume the Go node (cmd/node) and ./agent services from the next phase.
+x-node: &node
+  build: .
+  restart: unless-stopped
+  networks: [fabric]
+x-env: &env
+  PEERS: n1:7000,n2:7000,n3:7000,n4:7000,n5:7000
+  MTLS: "true"
+  AES256_AT_REST: "true"
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel:4317
+services:
+  n1: {<<: *node, environment: {<<: *env, NODE_ID: n1}, ports: ["7001:7000"]}
+  n2: {<<: *node, environment: {<<: *env, NODE_ID: n2}, ports: ["7002:7000"]}
+  n3: {<<: *node, environment: {<<: *env, NODE_ID: n3}, ports: ["7003:7000"]}
+  n4: {<<: *node, environment: {<<: *env, NODE_ID: n4}, ports: ["7004:7000"]}
+  n5: {<<: *node, environment: {<<: *env, NODE_ID: n5}, ports: ["7005:7000"]}
+  agent:
+    build: ./agent
+    environment: {GROQ_API_KEY: "${GROQ_API_KEY}", QDRANT_URL: "http://qdrant:6333", CLUSTER: "n1:7000,n2:7000,n3:7000,n4:7000,n5:7000"}
+    depends_on: [n1, qdrant]
+    networks: [fabric]
+  qdrant: {image: "qdrant/qdrant:latest", networks: [fabric]}
+  otel: {image: "otel/opentelemetry-collector:latest", networks: [fabric]}
+  prometheus:
+    image: prom/prometheus:latest
+    volumes: ["./prometheus:/etc/prometheus"]
+    ports: ["9090:9090"]
+    networks: [fabric]
+  grafana: {image: "grafana/grafana:latest", ports: ["3000:3000"], networks: [fabric]}
+networks: {fabric: {}}

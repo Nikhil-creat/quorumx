@@ -1,0 +1,6 @@
+global: {scrape_interval: 5s}
+rule_files: [alerts.yml]
+scrape_configs:
+  - job_name: quorumx
+    static_configs:
+      - targets: [n1:9100, n2:9100, n3:9100, n4:9100, n5:9100]

@@ -1,0 +1,13 @@
+syntax = "proto3";
+package quorumx.v1;
+service KV { rpc Get(Key) returns (Value); rpc Put(Entry) returns (Ack); rpc Delete(Key) returns (Ack);
+  rpc Range(Span) returns (stream Entry); rpc CAS(Swap) returns (Ack); }
+service Raft { rpc PreVote(VoteReq) returns (VoteResp); rpc RequestVote(VoteReq) returns (VoteResp);
+  rpc AppendEntries(Append) returns (AppendResp); rpc InstallSnapshot(stream Chunk) returns (Ack); }
+message Key {string tenant=1; string key=2;} message Value {bytes value=1; uint64 index=2;}
+message Entry {string tenant=1; string key=2; bytes value=3;} message Ack {bool ok=1; uint64 index=2;}
+message Span {string tenant=1; string start=2; string end=3;} message Swap {Entry next=1; bytes expect=2;}
+message VoteReq {uint64 term=1; string candidate=2; uint64 last_index=3; uint64 last_term=4;}
+message VoteResp {uint64 term=1; bool granted=2;}
+message Append {uint64 term=1; string leader=2; uint64 prev_index=3; uint64 prev_term=4; repeated Entry entries=5; uint64 commit=6;}
+message AppendResp {uint64 term=1; bool success=2; uint64 match=3;} message Chunk {bytes data=1;}

@@ -1,0 +1,18 @@
+groups:
+- name: quorumx
+  rules:
+  - alert: NoQuorum
+    expr: sum(quorumx_has_quorum) < 3
+    for: 10s
+    labels: {severity: page}
+  - alert: LeaderFlapping
+    expr: changes(quorumx_term[2m]) > 3
+    labels: {severity: warn}
+  - alert: ReplicationLag
+    expr: quorumx_replication_lag_ms > 500
+    for: 30s
+    labels: {severity: warn}
+  - alert: CnnAnomaly
+    expr: quorumx_anomaly_score > 0.8
+    for: 15s
+    labels: {severity: ticket}
